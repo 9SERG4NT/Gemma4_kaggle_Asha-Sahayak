@@ -1,18 +1,27 @@
 import logging
 
-# gradio-client 1.3.x (ships with Gradio 4.44) has a bug on Python 3.13:
-# get_type() does `"const" in schema` without checking if schema is a dict,
-# which raises TypeError when schema is a bool (e.g. "additionalProperties": false).
-# Patch the function before importing Gradio so the fix is in place when the
-# API schema is built at server startup.
+# gradio-client 1.3.x (ships with Gradio 4.44) crashes on Python 3.13 when
+# a JSON Schema boolean (True/False) is encountered during API info generation.
+# In JSON Schema, `true` means "any value valid" — both affected functions need
+# to return "any" instead of crashing.  The module-attribute patch is effective
+# for recursive calls because Python resolves global names at call time.
 try:
     import gradio_client.utils as _gc_utils
+
     _orig_get_type = _gc_utils.get_type
     def _safe_get_type(schema):
         if not isinstance(schema, dict):
             return "any"
         return _orig_get_type(schema)
     _gc_utils.get_type = _safe_get_type
+
+    _orig_jschema = _gc_utils._json_schema_to_python_type
+    def _safe_jschema(schema, defs=None):
+        if not isinstance(schema, dict):
+            return "any"
+        return _orig_jschema(schema, defs)
+    _gc_utils._json_schema_to_python_type = _safe_jschema
+
 except Exception:
     pass
 
