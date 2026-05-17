@@ -9,7 +9,7 @@ OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "gemma4:e4b")
 
 # Hugging Face fallback settings
 HF_TOKEN = os.getenv("HF_TOKEN", "")
-HF_MODEL_ID = os.getenv("HF_MODEL_ID", "google/gemma-4-e4b-it")
+HF_MODEL_ID = os.getenv("HF_MODEL_ID", "google/gemma-4-E4B-it")
 
 # Runtime switch: set USE_OLLAMA=false on HF Spaces, true locally
 USE_OLLAMA = os.getenv("USE_OLLAMA", "true").lower() == "true"
