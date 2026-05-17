@@ -2,13 +2,13 @@
 title: ASHA Sahayak
 emoji: 🏥
 colorFrom: green
-colorTo: teal
+colorTo: blue
 sdk: gradio
 sdk_version: "4.44.0"
 app_file: app.py
 pinned: true
 license: apache-2.0
-short_description: Offline-first AI triage assistant for rural Indian ASHA health workers
+short_description: AI triage assistant for rural Indian ASHA workers
 ---
 
 <div align="center">
