@@ -513,7 +513,6 @@ with gr.Blocks(
             value=DEFAULT_LANG,
             label="",
             show_label=False,
-            filterable=True,
             elem_classes=["lang-dropdown"],
         )
 
