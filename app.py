@@ -429,7 +429,7 @@ def _make_header(ollama_ok: bool, ollama_msg: str) -> str:
     </span>
     <span style="color:rgba(255,255,255,0.35);">|</span>
     <span style="color:rgba(255,255,255,0.92);font-size:0.82rem;">
-      🤖&nbsp;Model: <strong>{OLLAMA_MODEL if USE_OLLAMA else "HF Inference API"}</strong>
+      🤖&nbsp;Model: <strong>{OLLAMA_MODEL if USE_OLLAMA else "Gemma 4 31B"}</strong>
     </span>
     <span style="color:rgba(255,255,255,0.35);">|</span>
     <span style="color:rgba(255,255,255,0.92);font-size:0.82rem;">

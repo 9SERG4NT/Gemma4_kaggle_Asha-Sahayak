@@ -78,30 +78,12 @@ def stream_ollama(
         yield accumulated + f"\n\n⚠ Error: {exc}"
 
 
-_HF_UNAVAILABLE_MSG = (
-    "ℹ️  Gemma 4 E4B is not yet available on the HF Inference API serverless tier.\n\n"
-    "To use ASHA Sahayak with real Gemma 4 inference:\n\n"
-    "1. 🖥️  Run locally with Ollama:\n"
-    "   ollama pull gemma4:e4b\n"
-    "   python app.py\n\n"
-    "2. 📓  View the full interactive Kaggle notebook:\n"
-    "   https://kaggle.com/code  (search: ASHA Sahayak)\n\n"
-    "The HF Space demonstrates the UI and architecture. "
-    "Full offline inference runs on-device via Ollama — "
-    "keeping patient data private and requiring no internet connection."
-)
-
-
 def query_hf_inference(
     image: Image.Image, symptom_text: str = "", language: str = "Marathi"
 ) -> str:
-    """HF Inference API fallback (cloud, non-streaming).
-
-    Gemma 4 E4B does not currently have an HF Inference API provider.
-    Returns a clear informational message instead of crashing.
-    """
+    """Cloud inference via HF Router → featherless-ai → google/gemma-4-31B-it."""
     if not HF_TOKEN:
-        return _HF_UNAVAILABLE_MSG
+        raise RuntimeError("HF_TOKEN is not set.")
 
     image = resize_image(image)
     b64 = _image_to_base64(image)
@@ -124,20 +106,14 @@ def query_hf_inference(
                 ],
             },
         ],
-        "max_tokens": 450,
+        "max_tokens": 500,
     }
 
-    url = f"https://router.huggingface.co/hf-inference/v1/chat/completions"
+    url = "https://router.huggingface.co/featherless-ai/v1/chat/completions"
     try:
         resp = requests.post(url, headers=headers, json=payload, timeout=300)
         resp.raise_for_status()
         return resp.json()["choices"][0]["message"]["content"].strip()
-    except requests.exceptions.HTTPError as exc:
-        if exc.response is not None and exc.response.status_code in (404, 400, 403):
-            logger.warning("HF Inference API unavailable for %s: %s", HF_MODEL_ID, exc)
-            return _HF_UNAVAILABLE_MSG
-        logger.error("HF query failed: %s", exc)
-        raise
     except Exception as exc:
         logger.error("HF query failed: %s", exc)
         raise
